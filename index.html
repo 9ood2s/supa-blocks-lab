@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#0d3f48" />
+    <meta
+      name="description"
+      content="쌓기나무를 자유롭게 쌓고 옮기며 위·앞·옆에서 본 모양을 함께 살펴보는 인터랙티브 시안"
+    />
+    <title>쌓기나무 — Supa Sandbox Prototype</title>
+    <link rel="stylesheet" href="./styles.css?v=20260901k" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <header class="topbar">
+        <div class="title-lockup">
+          <div class="block-friend" aria-hidden="true">
+            <svg viewBox="0 0 72 72" focusable="false">
+              <polygon class="cube-icon__top" points="36,5 63,20 36,35 9,20"></polygon>
+              <polygon class="cube-icon__left" points="9,20 36,35 36,64 9,49"></polygon>
+              <polygon class="cube-icon__right" points="36,35 63,20 63,49 36,64"></polygon>
+              <circle class="cube-icon__eye" cx="46" cy="40" r="2.4"></circle>
+              <circle class="cube-icon__eye" cx="56" cy="35" r="2.4"></circle>
+              <path class="cube-icon__smile" d="M 46 49 Q 51 54 56 46"></path>
+              <circle class="cube-icon__cheek" cx="42" cy="50" r="2.2"></circle>
+              <circle class="cube-icon__cheek" cx="60" cy="42" r="2.2"></circle>
+            </svg>
+          </div>
+          <div>
+            <p>SUPA SANDBOX</p>
+            <h1>쌓기나무</h1>
+          </div>
+        </div>
+
+        <div class="live-facts" aria-label="현재 쌓기 정보">
+          <span><b id="totalCount">14</b>개</span>
+          <span><b id="layerCount">3</b>층</span>
+          <span><b id="boardCount">3 × 3</b>판</span>
+        </div>
+
+        <div class="history-tools" aria-label="작업 기록">
+          <button id="undoButton" class="icon-button" type="button" aria-label="되돌리기" title="되돌리기" disabled>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 7 4 12l5 5M5 12h8a6 6 0 0 1 6 6" /></svg>
+          </button>
+          <button id="redoButton" class="icon-button" type="button" aria-label="다시 실행" title="다시 실행" disabled>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 7 5 5-5 5m4-5h-8a6 6 0 0 0-6 6" /></svg>
+          </button>
+          <button id="resetButton" class="text-button" type="button" aria-label="처음 모양" title="처음 모양">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 7 4 12l5 5M5 12h7a7 7 0 1 1-5.8 10.9" /></svg>
+            <span class="reset-label reset-label--wide">처음 모양</span>
+            <span class="reset-label reset-label--compact">처음</span>
+          </button>
+        </div>
+      </header>
+
+      <section class="studio" aria-label="쌓기나무 자유 작업대">
+        <aside class="tool-dock" aria-label="쌓기 도구">
+          <button class="dock-tool is-active" type="button" data-tool="add" aria-pressed="true">
+            <span class="tool-glyph tool-glyph--cube" aria-hidden="true">
+              <svg viewBox="0 0 36 36" focusable="false">
+                <polygon class="cube-icon__top" points="18,3 32,11 18,19 4,11"></polygon>
+                <polygon class="cube-icon__left" points="4,11 18,19 18,34 4,26"></polygon>
+                <polygon class="cube-icon__right" points="18,19 32,11 32,26 18,34"></polygon>
+              </svg>
+            </span>
+            <b>쌓기</b>
+          </button>
+          <button class="dock-tool" type="button" data-tool="erase" aria-pressed="false">
+            <span class="tool-glyph tool-glyph--eraser" aria-hidden="true"></span>
+            <b>지우기</b>
+          </button>
+
+          <span class="dock-divider" aria-hidden="true"></span>
+
+          <button id="sizeButton" class="dock-tool" type="button" aria-expanded="false" aria-controls="sizePicker">
+            <span class="tool-glyph tool-glyph--grid" aria-hidden="true"></span>
+            <b>판 크기</b>
+          </button>
+          <button id="clearButton" class="dock-tool" type="button">
+            <span class="tool-glyph tool-glyph--sweep" aria-hidden="true"></span>
+            <b>비우기</b>
+          </button>
+
+          <div id="sizePicker" class="size-picker" hidden>
+            <div>
+              <span>가로</span>
+              <div id="colsPicker" class="number-pills" role="group" aria-label="판의 가로 칸 수"></div>
+            </div>
+            <div>
+              <span>깊이</span>
+              <div id="rowsPicker" class="number-pills" role="group" aria-label="판의 깊이 칸 수"></div>
+            </div>
+          </div>
+        </aside>
+
+        <section class="workbench" aria-labelledby="workbenchTitle">
+          <div class="workbench-heading">
+            <div>
+              <p>쌓고 옮기고, 빈 곳을 끌어 돌려요</p>
+              <h2 id="workbenchTitle">내가 만드는 모양</h2>
+            </div>
+            <div class="material-swatches" aria-hidden="true"><i></i><i></i><i></i></div>
+          </div>
+
+          <div class="canvas-wrap" id="canvasWrap">
+            <canvas
+              id="blocksCanvas"
+              aria-label="3차원 쌓기나무 작업대. 누르면 쌓고, 맨 위 나무를 끌면 옮기며, 빈 곳을 끌면 앞·옆·위 방향으로 돌려볼 수 있습니다."
+              aria-describedby="canvasHelp"
+            ></canvas>
+            <p id="canvasHelp" class="sr-only">
+              쌓기 도구에서는 칸을 누르면 쌓기나무 한 개가 올라갑니다. 지우기 도구에서는 누르면 맨 위 쌓기나무가 사라집니다.
+              쌓기나무를 끌어 다른 칸에 놓으면 맨 위 한 개가 옮겨지고, 작업대 밖으로 끌면 치워집니다.
+              쌓기나무 바깥의 빈 곳을 끌면 앞·옆·위 방향으로 자유롭게 돌려볼 수 있습니다.
+            </p>
+            <div id="dragTray" class="drag-tray" aria-hidden="true">작업대 밖으로 끌면 치워져요</div>
+          </div>
+        </section>
+
+        <aside class="view-shelf" aria-label="위, 앞, 옆에서 본 모양">
+          <div class="view-shelf-heading">
+            <p>움직일 때마다 함께 변해요</p>
+            <h2>세 방향에서 보기</h2>
+          </div>
+
+          <article class="view-card view-card--top">
+            <header><span class="direction-dot direction-dot--top"></span><b>위</b><small>뒤쪽 ↑</small></header>
+            <div id="topProjection" class="projection-surface top-projection" aria-label="위에서 본 모양"></div>
+            <footer><span>앞쪽</span></footer>
+          </article>
+
+          <div class="side-by-side-views">
+            <article class="view-card view-card--front">
+              <header><span class="direction-dot direction-dot--front"></span><b>앞</b><small>왼쪽 → 오른쪽</small></header>
+              <div id="frontProjection" class="projection-surface elevation-projection" aria-label="앞에서 본 모양"></div>
+            </article>
+
+            <article class="view-card view-card--side">
+              <header><span class="direction-dot direction-dot--side"></span><b>옆</b><small>앞쪽 → 뒤쪽</small></header>
+              <div id="sideProjection" class="projection-surface elevation-projection" aria-label="오른쪽 옆에서 본 모양"></div>
+            </article>
+          </div>
+
+          <div class="shelf-note" aria-hidden="true">
+            <span class="mini-face"><i></i><i></i><b></b></span>
+            <p>같은 나무가<br />세 모습으로 보여요</p>
+          </div>
+        </aside>
+      </section>
+
+      <p id="status" class="sr-only" role="status" aria-live="polite"></p>
+    </main>
+
+    <script src="./logic.js"></script>
+    <script src="./interaction.js"></script>
+    <script src="./app.js?v=20260901k"></script>
+  </body>
+</html>
