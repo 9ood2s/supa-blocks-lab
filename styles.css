@@ -51,7 +51,7 @@ button:focus-visible { outline: 4px solid var(--gold); outline-offset: 3px; }
   height: 100dvh;
   min-height: 0;
   display: grid;
-  grid-template-rows: auto minmax(0, 1fr);
+  grid-template-rows: auto minmax(0, 1fr) auto;
   overflow: hidden;
   background:
     radial-gradient(circle at 9% 9%, rgba(239, 184, 63, .26) 0 64px, transparent 65px),
@@ -364,6 +364,39 @@ button:focus-visible { outline: 4px solid var(--gold); outline-offset: 3px; }
 .mini-face i:first-child { left: 12px; }
 .mini-face i:nth-child(2) { right: 12px; }
 .mini-face b { position: absolute; left: 50%; bottom: 6px; width: 12px; height: 7px; border-bottom: 3px solid var(--ink); border-radius: 0 0 999px 999px; transform: translateX(-50%); }
+
+.service-footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  padding: 2px max(12px, env(safe-area-inset-right)) max(2px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left));
+  border-top: 1px solid var(--soft-line);
+  background: var(--paper);
+}
+.service-link {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  min-height: 44px;
+  padding: 4px 6px;
+  border-radius: 8px;
+  color: #191f28;
+  text-decoration: none;
+  touch-action: manipulation;
+}
+.service-link:hover { background: var(--ivory); }
+.service-link:focus-visible { outline: 3px solid var(--teal); outline-offset: 1px; }
+.service-logo { display: block; flex: 0 0 auto; width: 90px; height: 24px; }
+.service-copy { color: #66574f; font-size: 11px; font-weight: 500; line-height: 1.5; word-break: keep-all; }
+.service-copy > span { color: var(--teal); }
+
+@media (max-width: 599px) {
+  .service-footer { align-items: stretch; gap: 8px; }
+  .service-link { flex: 1 1 0; flex-direction: column; justify-content: center; gap: 1px; padding: 5px 0; text-align: center; }
+  .service-copy { font-size: 10px; }
+}
 
 /* 1024px 안팎의 태블릿 가로 화면은 데스크톱형 3열을 유지한다. */
 @media (min-width: 900px) and (max-width: 1199px) and (orientation: landscape) {
